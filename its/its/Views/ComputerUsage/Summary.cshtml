@@ -1,0 +1,120 @@
+﻿@model its.ViewModels.SummaryViewModel
+
+@{
+    var count = 0;
+    var monthsPerRow = 4;
+}
+@for (var calendarMonth = new DateTime(Model.StartDate.Year, Model.StartDate.Month, 1); calendarMonth <= Model.EndDate; calendarMonth = calendarMonth.AddMonths(1))
+{
+    var firstDayOfWeek = (int)calendarMonth.DayOfWeek;
+    var daysInMonth = DateTime.DaysInMonth(calendarMonth.Year, calendarMonth.Month);
+    var monthDateSelectors = (firstDayOfWeek + daysInMonth > 35 ? 42 : 35);
+
+    if (count % monthsPerRow == 0)
+    {
+        @:<div class="row mt-2">
+        }
+        <div class="col-12 col-md-3 px-2">
+            <table class="table table-sm table-bordered text-center">
+                <thead>
+                    <tr>
+                        <td colspan="7"><strong>@calendarMonth.ToString("MMMM yyyy")</strong></td>
+                    </tr>
+                    <tr>
+                        <td><div class="option">S</div></td>
+                        <td><div class="option">M</div></td>
+                        <td><div class="option">T</div></td>
+                        <td><div class="option">W</div></td>
+                        <td><div class="option">T</div></td>
+                        <td><div class="option">F</div></td>
+                        <td><div class="option">S</div></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int date = 1 - firstDayOfWeek; date <= (monthDateSelectors - firstDayOfWeek); date++)
+                    {
+                        var outOfRange = (calendarMonth.Month == Model.StartDate.Month && calendarMonth.Year == Model.StartDate.Year && date < Model.StartDate.Day
+                            || calendarMonth.Month == Model.EndDate.Month && calendarMonth.Year == Model.EndDate.Year && date > Model.EndDate.Day);
+                        var hideDate = date < 1 || date > daysInMonth;
+
+                        its.Models.DisplayDailySummary daily = null;
+                        DateTime dateForLink = DateTime.Now.Date;
+                        if (!hideDate)
+                        {
+                            dateForLink = new DateTime(calendarMonth.Year, calendarMonth.Month, date);
+                            daily = Model.Stats?.Where(_ => _.Date.Date == dateForLink.Date).SingleOrDefault();
+                        }
+
+                        if ((date + firstDayOfWeek) % 7 == 1)
+                        {
+                            @:<tr>
+                            }
+                            @if (hideDate)
+                            {
+                                <td>&nbsp;</td>
+                            }
+                            else
+                            {
+                                <td style="background-color: #@(daily?.Color ?? "cfd1d1")"
+                                    class="@(daily?.TextClass ?? "cu-day")"
+                                    title="@(daily?.Title ?? "0%, 0 minutes")">
+                                    <a asp-controller="ComputerUsage" asp-action="Detail" asp-route-branch="@Model.Branch" asp-route-date="@dateForLink.ToString("yyyyMMdd")">@date.ToString()</a>
+                                </td>
+                            }
+                            if ((date + firstDayOfWeek) % 7 == 0)
+                            {
+                            @:</tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        if (count % monthsPerRow == monthsPerRow - 1)
+        {
+        @:</div>
+    }
+    { count++; }
+}
+
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalLabel">Public Computer Use Summary</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    The <em>summary page</em> displays public computer use over the last twelve
+                    months. Usage maximums and minimums are computed based on the 12 months prior
+                    to the last day shown.
+                </p>
+
+                <div class="cu-scale-gradient mb-3">
+                    <div class="row pt-1 font-weight-bold">
+                        <div class="col-4 text-left"><p class="pl-2">Light use</p></div>
+                        <div class="col-4 text-center"><p>Moderate use</p></div>
+                        <div class="col-4 text-right"><p class="pr-2">Heavy use</p></div>
+                    </div>
+                </div>
+
+                <p>Please note:</p>
+                <ul>
+                    <li>The day with the most usage (100%), is red and its number <u>underlined</u>.</li>
+                    <li>The day with the lightest usage is green and its number <em>italicized</em>.</li>
+                    <li>Days that are grey have no recorded computer use.</li>
+                    <li>Hover the mouse over any day to find the usage in percentages and minutes.</li>
+                    <li>To find hourly usage, click on any calendar day.</li>
+                </ul>
+                <p>
+                    Comments? Questions? <a href="mailto:webteam@mcldaz.org&subject=Computer%20use%20dashboard">E-mail the Web team.</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>

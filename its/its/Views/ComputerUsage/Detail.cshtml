@@ -1,0 +1,232 @@
+﻿@model its.ViewModels.DetailViewModel
+
+@if (!string.IsNullOrEmpty(Model.Branch))
+{
+    <div class="row mt-2">
+        <div class="col-12 col-md-4 px-2">
+            <table class="cu-summary-table table table-sm table-bordered mb-2">
+                <thead>
+                    <tr>
+                        <th class="cu-summary-header" colspan="2">@Model.Historical2Date.ToString("ddd MM/dd/yyyy") - @Model.BranchName</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Historical2.Any())
+                    {
+                        for (var currentDate = Model.MinimumBranchHour; currentDate < Model.MaximumBranchHour; currentDate = currentDate.AddHours(1))
+                        {
+                            var currentStat = @Model.Historical2.FirstOrDefault(_ => _.Date.AddDays(7 * 104) == currentDate);
+                            <tr>
+                                <td class="cu-timespan @(currentStat?.TextClass ?? "cu-timespan-nodata")">@currentDate.ToString("t")</td>
+                                <td style="width: 100%">
+                                    <progressbar class="cu-detail-progress" pb-class="mcld-bg-60-blue" title="@currentStat?.Title" pb-label="@currentStat?.Label" pb-percent="@currentStat?.Percent"></progressbar>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2">No data.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-12 col-md-4 px-2">
+            <table class="cu-summary-table table table-sm table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th class="cu-summary-header" colspan="2">@Model.HistoricalDate.ToString("ddd MM/dd/yyyy") - @Model.BranchName</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Historical.Any())
+                    {
+                        for (var currentDate = Model.MinimumBranchHour; currentDate < Model.MaximumBranchHour; currentDate = currentDate.AddHours(1))
+                        {
+                            var currentStat = @Model.Historical.FirstOrDefault(_ => _.Date.AddDays(7 * 52) == currentDate);
+                            <tr>
+                                <td class="cu-timespan @(currentStat?.TextClass ?? "cu-timespan-nodata")">@currentDate.ToString("t")</td>
+                                <td style="width: 100%">
+                                    <progressbar class="cu-detail-progress" pb-class="mcld-bg-60-blue" title="@currentStat?.Title" pb-label="@currentStat?.Label" pb-percent="@currentStat?.Percent"></progressbar>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2">No data.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-12 col-md-4 px-2">
+            <table class="cu-summary-table table table-sm table-bordered cu-table-prime mb-0">
+                <thead>
+                    <tr>
+                        <th class="cu-summary-header cu-current" colspan="2">@Model.Date.ToString("ddd MM/dd/yyyy") - @Model.BranchName</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Stats.Any())
+                    {
+                        for (var currentDate = Model.MinimumBranchHour; currentDate < Model.MaximumBranchHour; currentDate = currentDate.AddHours(1))
+                        {
+                            var currentStat = @Model.Stats.FirstOrDefault(_ => _.Date == currentDate);
+                            <tr>
+                                <td class="cu-timespan @(currentStat?.TextClass ?? "cu-timespan-nodata")">@currentDate.ToString("t")</td>
+                                <td style="width: 100%">
+                                    <progressbar class="cu-detail-progress" pb-class="mcld-bg-blue" title="@currentStat?.Title" pb-label="@currentStat?.Label" pb-percent="@currentStat?.Percent"></progressbar>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2">No data.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+<div class="row mt-2">
+    <div class="col-12 col-md-4 px-2">
+        <table class="cu-summary-table table table-sm table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th class="cu-summary-header" colspan="2">@Model.Historical2Date.ToString("ddd MM/dd/yyyy") - District-wide</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.GlobalHistorical2.Any())
+                {
+                    for (var currentDate = Model.MinimumGlobalHour; currentDate < Model.MaximumGlobalHour; currentDate = currentDate.AddHours(1))
+                    {
+                        var currentStat = @Model.GlobalHistorical2.FirstOrDefault(_ => _.Date.AddDays(7 * 104) == currentDate);
+                        <tr>
+                            <td class="cu-timespan @currentStat?.TextClass">@currentDate.ToString("t")</td>
+                            <td style="width: 100%">
+                                <progressbar class="cu-detail-progress" pb-class="mcld-bg-60-green" title="@currentStat?.Title" pb-label="@currentStat?.Label" pb-percent="@currentStat?.Percent"></progressbar>
+                            </td>
+                        </tr>
+
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">No data.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-12 col-md-4 px-2">
+        <table class="cu-summary-table table table-sm table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th class="cu-summary-header" colspan="2">@Model.HistoricalDate.ToString("ddd MM/dd/yyyy") - District-wide</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.GlobalHistorical.Any())
+                {
+                    for (var currentDate = Model.MinimumGlobalHour; currentDate < Model.MaximumGlobalHour; currentDate = currentDate.AddHours(1))
+                    {
+                        var currentStat = @Model.GlobalHistorical.FirstOrDefault(_ => _.Date.AddDays(7 * 52) == currentDate);
+                        <tr>
+                            <td class="cu-timespan @currentStat?.TextClass">@currentDate.ToString("t")</td>
+                            <td style="width: 100%">
+                                <progressbar class="cu-detail-progress" pb-class="mcld-bg-60-green" title="@currentStat?.Title" pb-label="@currentStat?.Label" pb-percent="@currentStat?.Percent"></progressbar>
+                            </td>
+                        </tr>
+
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">No data.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="col-12 col-md-4 px-2">
+        <table class="cu-summary-table table table-sm table-bordered cu-table-prime mb-0">
+            <thead>
+                <tr>
+                    <th class="cu-summary-header cu-current" colspan="2">@Model.Date.ToString("ddd MM/dd/yyyy") - District-wide</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.GlobalStats.Any())
+                {
+                    for (var currentDate = Model.MinimumGlobalHour; currentDate < Model.MaximumGlobalHour; currentDate = currentDate.AddHours(1))
+                    {
+                        var currentStat = @Model.GlobalStats.FirstOrDefault(_ => _.Date == currentDate);
+                        <tr>
+                            <td class="cu-timespan @currentStat?.TextClass">@currentDate.ToString("t")</td>
+                            <td style="width: 100%">
+                                <progressbar class="cu-detail-progress" pb-class="mcld-bg-green" title="@currentStat?.Title" pb-label="@currentStat?.Label" pb-percent="@currentStat?.Percent"></progressbar>
+                            </td>
+                        </tr>
+
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">No data.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalLabel">Public Computer Use Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    The <em>detail page</em> shows public computer use for a single day. Percentages
+                    are based on that hour block for the last twelve months (i.e. 100% for 9 AM
+                    means the most usage between 9:00 AM and 9:59 AM for the last 12 months).
+                </p>
+                <p>Please note:</p>
+                <ul>
+                    <li>The selected day appears on the right and is outlined with a darker border.</li>
+                    <li>Historical data appears to the left: 52 weeks and 104 weeks prior to the selected date.</li>
+                    <li>When comparing historical data make note of holidays, closed days (ie: Staff Day) and other anomalies.</li>
+                    <li>Selecting a branch will show usage for that branch on the top (in blue) and district-wide use on the bottom (in yellow).</li>
+                    <li>Change the day by using the arrows on either side of the displayed date.</li>
+                    <li>Return to the main menu by selecting &lsquo;Computer Use&rsquo; in order to select from the complete calendar.</li>
+                </ul>
+                <p>
+                    Comments? Questions? <a href="mailto:webteam@mcldaz.org&subject=Computer%20use%20dashboard">E-mail the Web team.</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>

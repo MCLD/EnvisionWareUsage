@@ -1,0 +1,24 @@
+name: "Build - action"
+
+on: [push, pull_request]
+
+jobs:
+  envisionwareloader:
+    name: "envisionwareloader Docker"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "envisionwareloader Docker"
+        run: cd envisionwareloader && /bin/bash build.bash
+
+  its:
+    name: "its Docker"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "its Docker"
+        run: cd its && /bin/bash build.bash

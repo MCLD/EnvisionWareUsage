@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "Computer Usage")</title>
+    <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="http://internal-assets/fonts/1.0.0/fonts.css" />
+    <instance name="test">
+        <link rel="stylesheet" href="http://internal-assets/test/1.0.0/test.css" />
+    </instance>
+    <instance name="development">
+        <link rel="stylesheet" href="http://internal-assets/dev/1.0.0/dev.css" />
+    </instance>
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <div class="navbar navbar-expand-sm navbar-dark bg-dark oc-navbar">
+        <a class="navbar-brand"
+           asp-controller="ComputerUsage"
+           asp-action="Summary">
+            <span class="fas fa-tachometer-alt mr-1"></span>
+            Computer Use
+        </a>
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarMenu"
+                aria-controls="navbarMenu"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown @Context.Items[its.Keys.Item.CurrentBranchActive]">
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       id="navbarDropdown"
+                       role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        @(Context.Items[its.Keys.Item.SelectedBranchName] ?? "All Branches")
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-route-branch="">All branches</a>
+                        @foreach (var item in ((IDictionary<string, string>)Context.Items[its.Keys.Item.BranchList]).OrderBy(_ => _.Value))
+                        {
+                            <a class="dropdown-item" asp-route-branch="@item.Key">@(item.Value ?? item.Key)</a>
+                        }
+                    </div>
+                </li>
+                @if (Context.Items.ContainsKey(its.Keys.Item.CurrentDate))
+                {
+                    <li class="nav-item ml-1 active"><a asp-route-branch="@Context.Items[its.Keys.Item.CurrentBranch]" asp-route-date="@Context.Items[its.Keys.Item.DatePrevious]" class="nav-link"><span class="fas fa-angle-left"></span></a></li>
+                    <li class="nav-item navbar-text text-white">@Context.Items[its.Keys.Item.CurrentDate]</li>
+                    <li class="nav-item active"><a asp-route-branch="@Context.Items[its.Keys.Item.CurrentBranch]" asp-route-date="@Context.Items[its.Keys.Item.DateNext]" class="nav-link"><span class="fas fa-angle-right"></span></a></li>
+                }
+                @if (Context.Items.ContainsKey(its.Keys.Item.CurrentYear))
+                {
+                    <li class="nav-item ml-1 active"><a asp-route-branch="@Context.Items[its.Keys.Item.CurrentBranch]" asp-route-year="@Context.Items[its.Keys.Item.DatePrevious]" class="nav-link"><span class="fas fa-angle-left"></span></a></li>
+                    <li class="nav-item navbar-text text-white">@Context.Items[its.Keys.Item.CurrentYear]</li>
+                    <li class="nav-item active"><a asp-route-branch="@Context.Items[its.Keys.Item.CurrentBranch]" asp-route-year="@Context.Items[its.Keys.Item.DateNext]" class="nav-link"><span class="fas fa-angle-right"></span></a></li>
+                }
+                @if ((bool?)Context.Items[its.Keys.Item.OnSummaryPage] == true)
+                {
+                    @if (Context.Items[its.Keys.Item.YtdActive] != null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-route-year="@DateTime.Now.Year">@DateTime.Now.Year</a>
+                        </li>
+                    }
+                    <li class="nav-item @Context.Items[its.Keys.Item.YtdActive]">
+                        <a class="nav-link" asp-route-year="">YTD</a>
+                    </li>
+                }
+                <li class="nav-item">
+                    <button class="btn btn-link nav-link" data-toggle="modal" data-target="#helpModal"><span class="far fa-question-circle"></span></button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        @if (TempData[its.Keys.TempData.AlertDanger] != null)
+        {
+            <div class="row">
+                <div class="col-12 col-md-6 offset-md-3">
+                    <div class="alert alert-danger">@Html.Raw(TempData[its.Keys.TempData.AlertDanger])</div>
+                </div>
+            </div>
+        }
+        @if (TempData[its.Keys.TempData.AlertWarning] != null)
+        {
+            <div class="row">
+                <div class="col-12 col-md-6 offset-md-3">
+                    <div class="alert alert-warning">@Html.Raw(TempData[its.Keys.TempData.AlertWarning])</div>
+                </div>
+            </div>
+        }
+        @if (TempData[its.Keys.TempData.AlertSuccess] != null)
+        {
+            <div class="row">
+                <div class="col-12 col-md-6 offset-md-3">
+                    <div class="alert alert-success">@Html.Raw(TempData[its.Keys.TempData.AlertSuccess])</div>
+                </div>
+            </div>
+        }
+        @if (TempData[its.Keys.TempData.AlertInfo] != null)
+        {
+            <div class="row">
+                <div class="col-12 col-md-6 offset-md-3">
+                    <div class="alert alert-info">@Html.Raw(TempData[its.Keys.TempData.AlertInfo])</div>
+                </div>
+            </div>
+        }
+
+        @RenderBody()
+    </div>
+
+    <script src="~/js/main.min.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
